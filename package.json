@@ -1,6 +1,6 @@
 {
   "name": "targwire",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "TargWire – mini IoC para TS/JS com Singleton, Transient e Scoped (ideal para Expo/React Native).",
   "license": "MIT",
   "type": "module",
