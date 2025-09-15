@@ -1,7 +1,15 @@
 {
   "name": "targwire",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "TargWire – mini IoC para TS/JS com Singleton, Transient e Scoped (ideal para Expo/React Native).",
+    "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rtsouza26/targwire.git"
+  },
+  "homepage": "https://github.com/rtsouza26/targwire#readme",
+  "bugs": {
+    "url": "https://github.com/rtsouza26/targwire/issues"
+  },
   "license": "MIT",
   "type": "module",
   "main": "dist/index.cjs",
