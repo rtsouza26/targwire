@@ -1,8 +1,8 @@
 {
   "name": "targwire",
-  "version": "1.0.4",
+  "version": "1.2.0",
   "description": "TargWire – mini IoC para TS/JS com Singleton, Transient e Scoped (ideal para Expo/React Native).",
-    "repository": {
+  "repository": {
     "type": "git",
     "url": "git+https://github.com/rtsouza26/targwire.git"
   },
@@ -34,9 +34,20 @@
     "clean": "rimraf dist",
     "prepublishOnly": "npm run clean && npm run build"
   },
+  "peerDependencies": {
+    "reflect-metadata": "^0.1.13"
+  },
+  "peerDependenciesMeta": {
+    "reflect-metadata": {
+      "optional": true
+    }
+  },
   "devDependencies": {
+    "rimraf": "^6.0.0",
     "tsup": "^8.0.0",
-    "typescript": "^5.5.0",
-    "rimraf": "^6.0.0"
+    "typescript": "^5.5.0"
+  },
+  "dependencies": {
+    "reflect-metadata": "^0.2.2"
   }
 }

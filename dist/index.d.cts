@@ -56,4 +56,29 @@ declare function _clearIOCPlugins(): void;
  */
 declare function bootstrapIOC(): void;
 
-export { Container, type IOCRegistrar, type Token, _clearIOCPlugins, bootstrapIOC, createScope, defineToken, getIOCPlugins, isRegistered, overrideFactory, overrideSingleton, overrideValue, registerFactory, registerIOCPlugin, registerSingleton, registerValue, reset, resolve, rootContainer };
+type Lifetime = 'singleton' | 'transient';
+type InjectableOptions<T> = {
+    token?: Token<T> | string;
+    lifetime?: Lifetime;
+    container?: Container;
+};
+/**
+ * Marca um parâmetro do construtor para ser resolvido a partir de um Token.
+ * Use quando o tipo não pode ser deduzido ou para customizar o Token.
+ */
+declare function Inject(tokenOrDesc: Token<any> | string): ParameterDecorator;
+/**
+ * Registra a classe no container e monta as dependências via construtor.
+ *
+ * - Por padrão registra como singleton no rootContainer.
+ * - Se lifetime === 'transient', registra como factory.
+ * - O token padrão é o nome da classe, mas pode ser passado via options.token.
+ */
+declare function Injectable<T>(options?: InjectableOptions<T>): ClassDecorator;
+/**
+ * Injeta uma dependência em um campo usando o rootContainer.
+ * Útil para cenários React/Expo em que não queremos mudar o construtor.
+ */
+declare function Resolve(tokenOrDesc?: Token<any> | string): PropertyDecorator;
+
+export { Container, type IOCRegistrar, Inject, Injectable, Resolve, type Token, _clearIOCPlugins, bootstrapIOC, createScope, defineToken, getIOCPlugins, isRegistered, overrideFactory, overrideSingleton, overrideValue, registerFactory, registerIOCPlugin, registerSingleton, registerValue, reset, resolve, rootContainer };

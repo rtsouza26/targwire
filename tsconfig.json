@@ -6,6 +6,8 @@
     "isolatedModules": true,
     "moduleResolution": "Bundler",
     "strict": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "noEmit": true,
     "skipLibCheck": true
   },

@@ -89,8 +89,72 @@ function bootstrapIOC() {
   }
   bootstrapped = true;
 }
+
+// src/decorators.ts
+var ReflectMeta = Reflect;
+var paramTokens = /* @__PURE__ */ new WeakMap();
+function Inject(tokenOrDesc) {
+  return (target, _propertyKey, index) => {
+    var _a;
+    const existing = (_a = paramTokens.get(target)) != null ? _a : [];
+    const token = typeof tokenOrDesc === "string" ? defineToken(tokenOrDesc) : tokenOrDesc;
+    existing[index] = token;
+    paramTokens.set(target, existing);
+  };
+}
+function getConstructorTokens(target) {
+  var _a, _b;
+  const explicit = (_a = paramTokens.get(target)) != null ? _a : [];
+  const designTypes = (_b = ReflectMeta.getMetadata) == null ? void 0 : _b.call(ReflectMeta, "design:paramtypes", target);
+  const inferred = designTypes != null ? designTypes : [];
+  const max = Math.max(explicit.length, inferred.length);
+  const tokens = [];
+  for (let i = 0; i < max; i++) {
+    const provided = explicit[i];
+    if (provided) {
+      tokens.push(provided);
+      continue;
+    }
+    const type = inferred[i];
+    if (type && type.name && type.name !== "Object") {
+      tokens.push(defineToken(type.name));
+      continue;
+    }
+    throw new Error(`Token ausente para o par\xE2metro ${i} do construtor de ${target.name}. Adicione @Inject().`);
+  }
+  return tokens;
+}
+function Injectable(options = {}) {
+  return (ctor) => {
+    var _a, _b;
+    const container = (_a = options.container) != null ? _a : rootContainer;
+    const token = typeof options.token === "string" ? defineToken(options.token) : (_b = options.token) != null ? _b : defineToken(ctor.name);
+    const deps = getConstructorTokens(ctor);
+    const factory = () => new ctor(...deps.map((t) => container.resolve(t)));
+    if (options.lifetime === "transient") {
+      container.registerFactory(token, factory);
+    } else {
+      container.registerSingleton(token, factory);
+    }
+  };
+}
+function Resolve(tokenOrDesc) {
+  return (target, propertyKey) => {
+    const token = tokenOrDesc === void 0 ? defineToken(String(propertyKey)) : typeof tokenOrDesc === "string" ? defineToken(tokenOrDesc) : tokenOrDesc;
+    Object.defineProperty(target, propertyKey, {
+      get() {
+        return rootContainer.resolve(token);
+      },
+      enumerable: true,
+      configurable: true
+    });
+  };
+}
 export {
   Container,
+  Inject,
+  Injectable,
+  Resolve,
   _clearIOCPlugins,
   bootstrapIOC,
   createScope,

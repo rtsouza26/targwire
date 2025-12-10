@@ -5,6 +5,7 @@ Mini **IoC container** tipado para TypeScript com **Singleton**, **Transient (Fa
 - ✅ Tokens tipados (`Token<T>`)
 - ✅ Ciclos de vida: `registerSingleton`, `registerFactory` (transient), `createScope` (scoped)
 - ✅ Overrides e reset (testes/HMR)
+- ✅ Opcionalmente via decorators: `@Injectable`, `@Inject`, `@Resolve`
 - ✅ Plugin registry para registrar módulos do **app** e dar `bootstrapIOC()` uma vez só
 
 ---
@@ -105,6 +106,10 @@ import {
   overrideValue,
   overrideSingleton,
   overrideFactory,
+  // Decorators (opcional):
+  Injectable,              // registra classe como singleton (default) ou transient
+  Inject,                  // força token de parâmetro no construtor
+  Resolve,                 // injeta propriedade via getter
   // Plugins/Bootstrap
   registerIOCPlugin,       // (registrar: (c: Container) => void)
   bootstrapIOC,            // executa todos os registrars uma vez
@@ -153,6 +158,51 @@ bootstrapIOC();
 > import bootstrapIOC from '@/ioc/bootstrap-app';
 > bootstrapIOC();
 > ```
+
+---
+
+## Uso com decorators (opcional)
+
+Os decorators facilitam o registro/injeção via construtor. **Habilite decoradores** no seu projeto (`experimentalDecorators` + `emitDecoratorMetadata`) e, se quiser inferir tipos automaticamente, instale `reflect-metadata` e importe-a no entrypoint.
+
+```bash
+npm i reflect-metadata    # opcional
+```
+
+### Registrar classes
+```ts
+import 'reflect-metadata'; // se quiser inferência automática de tipos
+import { Injectable, Inject, defineToken, resolve } from 'targwire';
+
+const RepoToken = defineToken<UserRepo>('Users.Repo');
+
+@Injectable() // singleton padrão
+class GetUsers {
+  constructor(@Inject(RepoToken) private repo: UserRepo) {}
+}
+
+@Injectable({ lifetime: 'transient' })
+class Controller {
+  constructor(private usecase: GetUsers) {} // inferido via reflect-metadata
+}
+
+const controller = resolve(defineToken<Controller>('Controller')); // token padrão = nome da classe
+```
+
+### Injeção por propriedade
+```ts
+import { Resolve, defineToken } from 'targwire';
+import type { Logger } from './logger';
+
+const LoggerToken = defineToken<Logger>('Logger');
+
+class MyComponent {
+  @Resolve(LoggerToken)
+  logger!: Logger;
+}
+```
+
+> Sem `reflect-metadata`, anote parâmetros com `@Inject(Token)` para evitar erros de token ausente.
 
 ---
 
@@ -259,3 +309,15 @@ test('override de use case', async () => {
 ## Licença
 
 MIT © Rafael Targino
+
+---
+
+### Exemplo completo (Expo + Decorators + React Query + Zustand)
+
+- Veja `examples/expo-zustand-react-query` para um app Expo que usa decorators com TargWire, React Query e Zustand consumindo a API do JSONPlaceholder.
+- Inclui `babel.config.js` (com `@babel/plugin-proposal-decorators` e `babel-plugin-transform-typescript-metadata`) e `tsconfig.json` configurados para decorators.
+
+**Importante (Expo):** para que os decorators (`@Injectable`, `@Inject`, `@Resolve`) funcionem, copie para a raiz do seu app:
+- `babel.config.js` com os plugins acima (decorators deve vir antes do metadata).
+- `tsconfig.json` com `experimentalDecorators` e `emitDecoratorMetadata` habilitados.
+- Além disso, instale como dependências de desenvolvimento: `@babel/plugin-proposal-decorators` e `babel-plugin-transform-typescript-metadata`.
