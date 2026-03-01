@@ -1,6 +1,6 @@
 {
   "name": "targwire",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "TargWire – mini IoC para TS/JS com Singleton, Transient e Scoped (ideal para Expo/React Native).",
   "repository": {
     "type": "git",
