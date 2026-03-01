@@ -1,5 +1,7 @@
 # TargWire
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 Mini **IoC container** tipado para TypeScript com **Singleton**, **Transient (Factory)** e **Scoped** (child containers). Ideal para apps **Expo/React Native** (Hermes), web e Node — zero dependências.
 
 - ✅ Tokens tipados (`Token<T>`)
@@ -308,7 +310,7 @@ test('override de use case', async () => {
 
 ## Licença
 
-MIT © Rafael Targino
+Este projeto está licenciado sob a licença [MIT](LICENSE) © [Rafael Targino](https://github.com/rtsouza26).
 
 ---
 
